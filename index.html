@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Christmas gift list</title>
+<script>try{var t=localStorage.getItem("gift-theme");if(t&&t!=="default")document.documentElement.setAttribute("data-xmas",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#F4F6F2; --surface:#FFFFFF; --ink:#16332A; --muted:#5D7168; --line:#D9E2DC;
@@ -124,22 +125,109 @@ dialog::backdrop{background:rgba(10,25,20,.45)}
   .two{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== Festive themes (colors only; layout untouched) ===== */
+:root[data-xmas="classic"]{
+  --bg:#F3EFE6; --surface:#FFFDF8; --ink:#2B1A14; --muted:#6E5A50; --line:#E2D6C6;
+  --holly:#A3121C; --holly-soft:#F5D9D6; --gold:#A77B12; --gold-soft:#F3E6C3;
+  --pine:#18573B; --pine-soft:#D6E8DC; --frost:#ECE5D8; color-scheme:light;
+}
+:root[data-xmas="candy"]{
+  --bg:#FFF7F7; --surface:#FFFFFF; --ink:#3A1218; --muted:#8A5A62; --line:#F2D3D7;
+  --holly:#D7263D; --holly-soft:#FBE0E3; --gold:#B7860B; --gold-soft:#F7EBC9;
+  --pine:#23845F; --pine-soft:#DDF2E8; --frost:#FBEDEF; color-scheme:light;
+}
+:root[data-xmas="night"]{
+  --bg:#0D1730; --surface:#14213F; --ink:#EEF2FB; --muted:#A5B2CF; --line:#26365C;
+  --holly:#FF7A85; --holly-soft:#3A2240; --gold:#F2CF6B; --gold-soft:#3A3524;
+  --pine:#8FD9C0; --pine-soft:#1D3A45; --frost:#1B2A4D; color-scheme:dark;
+}
+:root[data-xmas="ginger"]{
+  --bg:#F2E3CF; --surface:#FBF3E8; --ink:#3B2312; --muted:#7B5A40; --line:#E0C8A8;
+  --holly:#B5402A; --holly-soft:#F3D9CE; --gold:#9A6A1F; --gold-soft:#F1E1C2;
+  --pine:#7A4A23; --pine-soft:#EBD9C2; --frost:#EADAC2; color-scheme:light;
+}
+/* Theme touches */
+:root[data-xmas] .top h1{font-family:"Mountains of Christmas","Young Serif",Georgia,serif;font-weight:700;font-size:2.5rem;letter-spacing:.01em}
+:root[data-xmas="candy"] .summary,:root[data-xmas="candy"] .person{border-top:0;position:relative;overflow:hidden}
+:root[data-xmas="candy"] .summary::before,:root[data-xmas="candy"] .person::before{content:"";display:block;height:8px;margin:-18px -20px 14px;background:repeating-linear-gradient(-45deg,var(--holly) 0 10px,#fff 10px 20px)}
+:root[data-xmas="candy"] .person::before{margin:0}
+:root[data-xmas="ginger"] .summary,:root[data-xmas="ginger"] .person{border:2px dashed #FFFFFF;outline:3px solid var(--line);outline-offset:-1px}
+:root[data-xmas="classic"] .tag-hole{background:var(--gold);border-color:var(--holly)}
+:root[data-xmas="night"] .tag-hole{box-shadow:0 0 8px var(--gold)}
+.snow{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.snow i{position:absolute;top:-10px;width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:.75;animation:fall var(--d) linear var(--delay) infinite}
+@keyframes fall{to{transform:translate(var(--x),105vh)}}
+.wrap{position:relative;z-index:1}
+.theme-pick{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 8px;font-size:.85rem}
+
+/* ===== Tabs ===== */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 0 16px}
+.tab{background:none;border:0;padding:9px 14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--holly)}
+
+/* ===== Dashboard ===== */
+.dash-grid{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h3{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:1.1rem;margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:.85rem;margin:0 0 12px}
+.cmp{display:grid;grid-template-columns:minmax(80px,140px) 1fr auto;gap:8px 12px;align-items:center}
+.cmp-name{font-weight:500;overflow-wrap:anywhere}
+.cmp-val{font-variant-numeric:tabular-nums;font-size:.88rem;text-align:right;white-space:nowrap}
+.cmp-val small{color:var(--muted)}
+.track{position:relative;height:14px;background:var(--frost);border-radius:7px;overflow:hidden}
+.track .spent{position:absolute;inset:0 auto 0 0;background:var(--pine);border-radius:7px}
+.track .plan{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(-45deg,var(--gold-soft) 0 4px,transparent 4px 8px);border:1px solid var(--gold);border-left:0;border-radius:0 7px 7px 0}
+.track .over{background:var(--holly)}
+.track .mark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-top:12px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.stack{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--frost)}
+.stack span{display:block;height:100%}
+.c-idea{--c:var(--line);background:var(--line)}
+.c-bought{--c:var(--gold);background:var(--gold)}
+.c-wrapped{--c:var(--holly);background:var(--holly)}
+.c-given{--c:var(--pine);background:var(--pine)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.stat b{display:block;font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:1.35rem}
+.stat span{color:var(--muted);font-size:.85rem}
+.todo{list-style:none;margin:0;padding:0}
+.todo li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.todo li:first-child{border-top:0}
+.todo .why{color:var(--muted);font-size:.88rem;text-align:right}
+.quiet{color:var(--muted);font-size:.92rem;margin:0}
+@media (max-width:520px){.cmp{grid-template-columns:1fr auto}.cmp .track{grid-column:1/3}}
+@media (prefers-reduced-motion:reduce){.snow{display:none}}
 </style>
 </head>
 <body>
+<div class="snow" id="snow" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
     <div>
       <h1>Christmas gift list</h1>
       <div class="countdown" id="countdown"></div>
     </div>
-    <div class="account"><span class="sync" id="sync" aria-live="polite">Loading…</span><span id="who"></span><button class="link" id="signOut" hidden>Sign out</button></div>
+    <div class="account"><span class="sync" id="sync" aria-live="polite">Loading…</span><span id="who"></span><button class="link" id="signOut" hidden>Sign out</button>
+      <label><span class="sr" style="position:absolute;left:-9999px">Theme</span>
+        <select class="theme-pick" id="themePick" aria-label="Theme">
+          <option value="default">Evergreen</option>
+          <option value="classic">Classic</option>
+          <option value="candy">Candy cane</option>
+          <option value="night">Snowy night</option>
+          <option value="ginger">Gingerbread</option>
+        </select></label></div>
   </header>
 
   <div id="gate" class="gate" hidden></div>
   <div id="app" hidden>
   <section class="summary" id="summary" aria-label="Spending summary"></section>
 
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tabList" aria-selected="true" aria-controls="listView">Gift list</button>
+    <button class="tab" role="tab" id="tabDash" aria-selected="false" aria-controls="dashView">Dashboard</button>
+  </div>
+  <div id="listView" role="tabpanel" aria-labelledby="tabList">
   <div class="toolbar">
     <div class="filters" role="group" aria-label="Filter gifts by status" id="filters"></div>
     <div class="spacer"></div>
@@ -147,6 +235,8 @@ dialog::backdrop{background:rgba(10,25,20,.45)}
   </div>
 
   <main id="list"></main>
+  </div>
+  <div id="dashView" role="tabpanel" aria-labelledby="tabDash" hidden></div>
   </div>
 </div>
 
@@ -255,6 +345,7 @@ function showApp(){ $("gate").hidden = true; $("app").hidden = false; }
 
 /* ---------- Render ---------- */
 function render(){
+  renderDash();
   let spent=0, budget=0, planned=0; const counts={idea:0,bought:0,wrapped:0,given:0};
   people.forEach(p=>{ budget += Number(p.budget)||0; });
   gifts.forEach(g=>{ if(!people.some(p=>p.id===g.personId)) return; counts[g.status]=(counts[g.status]||0)+1; if(counted(g)) spent+=Number(g.price)||0; else planned+=Number(g.price)||0; });
@@ -410,6 +501,134 @@ $("list").addEventListener("click",e=>{
     write("gifts", g.id, strip(ng));
   }
 });
+
+
+/* ---------- Dashboard (read-only view of the same data) ---------- */
+function renderDash(){
+  const el = $("dashView"); if (!el || el.hidden) return;
+  if (!people.length){ el.innerHTML = `<div class="empty"><h2>Nothing to compare yet</h2><div>Add people and gifts on the Gift list tab, and this fills in on its own.</div></div>`; return; }
+  const live = gifts.filter(g=>people.some(p=>p.id===g.personId));
+  const rows = people.map(p=>{
+    const gs = live.filter(g=>g.personId===p.id);
+    const spent = gs.filter(counted).reduce((a,g)=>a+(Number(g.price)||0),0);
+    const plan = gs.filter(g=>!counted(g)).reduce((a,g)=>a+(Number(g.price)||0),0);
+    const st = {idea:0,bought:0,wrapped:0,given:0}; gs.forEach(g=>st[g.status]=(st[g.status]||0)+1);
+    return {p, gs, spent, plan, budget:Number(p.budget)||0, st};
+  }).sort((a,b)=>b.spent-a.spent);
+  const scale = Math.max(1, ...rows.map(r=>Math.max(r.spent+r.plan, r.budget)));
+  const pctOf = v => (v/scale*100).toFixed(2)+"%";
+
+  // Comparison bars
+  const cmp = rows.map(r=>{
+    const over = r.budget>0 && r.spent>r.budget;
+    return `<div class="cmp-name">${esc(r.p.name)}</div>
+      <div class="track" role="img" aria-label="${esc(r.p.name)}: ${money(r.spent)} spent${r.budget?` of ${money(r.budget)}`:""}${r.plan?`, ${money(r.plan)} more in ideas`:""}">
+        <span class="spent ${over?"over":""}" style="width:${pctOf(r.spent)}"></span>
+        ${r.plan?`<span class="plan" style="left:${pctOf(r.spent)};width:${pctOf(r.plan)}"></span>`:""}
+        ${r.budget?`<span class="mark" style="left:calc(${pctOf(r.budget)} - 1px)"></span>`:""}
+      </div>
+      <div class="cmp-val">${money(r.spent)}${r.budget?` <small>/ ${money(r.budget)}</small>`:""}</div>`;
+  }).join("");
+
+  // Stats
+  const totalSpent = rows.reduce((a,r)=>a+r.spent,0);
+  const avg = totalSpent/rows.length;
+  const hi = rows[0], lo = rows[rows.length-1];
+  const bought = live.filter(counted);
+  const avgGift = bought.length ? bought.reduce((a,g)=>a+(Number(g.price)||0),0)/bought.length : 0;
+  const priciest = [...bought].sort((a,b)=>(Number(b.price)||0)-(Number(a.price)||0))[0];
+
+  // Progress
+  const st = {idea:0,bought:0,wrapped:0,given:0}; live.forEach(g=>st[g.status]=(st[g.status]||0)+1);
+  const tot = live.length||1;
+  const stackOf = s => STATUSES.map(k=>s[k]?`<span class="c-${k}" style="width:${s[k]/Math.max(1,Object.values(s).reduce((a,b)=>a+b,0))*100}%" title="${LABEL[k]}: ${s[k]}"></span>`:"").join("");
+  const perPersonProgress = rows.map(r=>`<div class="cmp-name">${esc(r.p.name)}</div>
+    <div class="stack" role="img" aria-label="${esc(r.p.name)}: ${STATUSES.map(k=>`${r.st[k]} ${LABEL[k].toLowerCase()}`).join(", ")}">${stackOf(r.st)}</div>
+    <div class="cmp-val">${r.gs.length} ${r.gs.length===1?"gift":"gifts"}</div>`).join("");
+
+  // Stores
+  const stores = {};
+  bought.forEach(g=>{ const k=(g.store||"").trim(); if(!k) return; const key=k.toLowerCase(); stores[key]=stores[key]||{name:k,total:0,n:0}; stores[key].total+=Number(g.price)||0; stores[key].n++; });
+  const storeRows = Object.values(stores).sort((a,b)=>b.total-a.total).slice(0,8);
+  const sMax = Math.max(1,...storeRows.map(s=>s.total));
+  const storeHtml = storeRows.length ? `<div class="cmp">${storeRows.map(s=>`<div class="cmp-name">${esc(s.name)}</div>
+      <div class="track"><span class="spent" style="width:${(s.total/sMax*100).toFixed(2)}%;background:var(--gold)"></span></div>
+      <div class="cmp-val">${money(s.total)} <small>· ${s.n}</small></div>`).join("")}</div>`
+    : `<p class="quiet">Add a store or link to bought gifts to see where the money’s going.</p>`;
+
+  // Needs attention
+  const todo = [];
+  rows.forEach(r=>{
+    if (!r.gs.length) todo.push([r.p.name,"No gift ideas yet"]);
+    else if (!r.gs.some(counted)) todo.push([r.p.name,"Nothing bought yet"]);
+    if (r.budget && r.spent>r.budget) todo.push([r.p.name,`${money(r.spent-r.budget)} over budget`]);
+    const unwrapped = r.st.bought||0; if (unwrapped) todo.push([r.p.name,`${unwrapped} to wrap`]);
+  });
+
+  el.innerHTML = `<div class="dash-grid">
+    <section class="card"><h3>Spending by person</h3>
+      <p class="sub">Solid is spent, striped is gift ideas not bought yet, and the line is their budget.</p>
+      <div class="cmp">${cmp}</div>
+      <div class="legend"><span style="--c:var(--pine)">Spent</span><span style="--c:var(--gold)">Ideas</span><span style="--c:var(--holly)">Over budget</span></div>
+    </section>
+    <section class="card"><h3>How even is it?</h3>
+      <div class="stats">
+        <div class="stat"><b>${money(avg)}</b><span>Average per person</span></div>
+        <div class="stat"><b>${esc(hi.p.name)}</b><span>Most spent · ${money(hi.spent)}</span></div>
+        <div class="stat"><b>${esc(lo.p.name)}</b><span>Least spent · ${money(lo.spent)}</span></div>
+        <div class="stat"><b>${money(avgGift)}</b><span>Average gift</span></div>
+        ${priciest?`<div class="stat"><b>${money(priciest.price)}</b><span>Priciest · ${esc(priciest.title)}</span></div>`:""}
+      </div>
+    </section>
+    <section class="card"><h3>Progress</h3>
+      <p class="sub">${st.given} of ${live.length} given, ${st.wrapped+st.given} wrapped, ${st.bought+st.wrapped+st.given} bought.</p>
+      <div class="stack" style="margin-bottom:14px" role="img" aria-label="Overall progress">${stackOf(st)}</div>
+      <div class="cmp">${perPersonProgress}</div>
+      <div class="legend">${STATUSES.map(k=>`<span class="c-${k}" style="background:none">${LABEL[k]}</span>`).join("")}</div>
+    </section>
+    <section class="card"><h3>Where it’s being spent</h3>${storeHtml}</section>
+    <section class="card"><h3>Still to do</h3>
+      ${todo.length?`<ul class="todo">${todo.map(([n,w])=>`<li><span>${esc(n)}</span><span class="why">${esc(w)}</span></li>`).join("")}</ul>`:`<p class="quiet">Everyone’s covered and everything’s wrapped.</p>`}
+    </section>
+  </div>`;
+}
+
+/* ---------- Tabs ---------- */
+function selectTab(which){
+  const dash = which==="dash";
+  $("tabList").setAttribute("aria-selected", String(!dash));
+  $("tabDash").setAttribute("aria-selected", String(dash));
+  $("listView").hidden = dash; $("dashView").hidden = !dash;
+  if (dash) renderDash();
+}
+$("tabList").addEventListener("click",()=>selectTab("list"));
+$("tabDash").addEventListener("click",()=>selectTab("dash"));
+
+/* ---------- Themes (saved on this device only) ---------- */
+function makeSnow(on){
+  const box = $("snow"); box.innerHTML = "";
+  if (!on || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for (let i=0;i<45;i++){
+    const f=document.createElement("i");
+    f.style.left = Math.random()*100+"%";
+    f.style.setProperty("--s", (2+Math.random()*4).toFixed(1)+"px");
+    f.style.setProperty("--d", (8+Math.random()*10).toFixed(1)+"s");
+    f.style.setProperty("--delay", (-Math.random()*18).toFixed(1)+"s");
+    f.style.setProperty("--x", (Math.random()*60-30).toFixed(0)+"px");
+    box.appendChild(f);
+  }
+}
+function applyTheme(t){
+  if (t==="default") document.documentElement.removeAttribute("data-xmas");
+  else document.documentElement.setAttribute("data-xmas", t);
+  makeSnow(t==="night");
+  try{ localStorage.setItem("gift-theme", t); }catch(e){}
+}
+(function(){
+  let t="default"; try{ t = localStorage.getItem("gift-theme")||"default"; }catch(e){}
+  $("themePick").value = t; applyTheme(t);
+  $("themePick").addEventListener("change",e=>applyTheme(e.target.value));
+})();
 
 /* ---------- Start ---------- */
 if (firebaseConfig.apiKey === "PASTE_API_KEY"){
