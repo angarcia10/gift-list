@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Christmas gift list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F2; --surface:#FFFFFF; --ink:#16332A; --muted:#5D7168; --line:#D9E2DC;
+  --holly:#B3261E; --holly-soft:#F6E1DF; --gold:#B8901C; --gold-soft:#F5EDD3;
+  --pine:#1F5A45; --pine-soft:#DDEBE3; --frost:#EAF0EC;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1D18; --surface:#16281F; --ink:#E8EFEA; --muted:#9DB0A6; --line:#2A4236;
+    --holly:#F0746A; --holly-soft:#3A1E1C; --gold:#E2BE55; --gold-soft:#352D16;
+    --pine:#7CC7A3; --pine-soft:#1E3A2E; --frost:#1B3027; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1D18; --surface:#16281F; --ink:#E8EFEA; --muted:#9DB0A6; --line:#2A4236;
+  --holly:#F0746A; --holly-soft:#3A1E1C; --gold:#E2BE55; --gold-soft:#352D16;
+  --pine:#7CC7A3; --pine-soft:#1E3A2E; --frost:#1B3027; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px}
+h1,h2{font-family:"Young Serif",Georgia,"Times New Roman",serif;font-weight:400;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* Header */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.top h1{font-size:2.1rem;line-height:1.1}
+.countdown{color:var(--muted);margin-top:4px}
+.countdown strong{color:var(--holly);font-weight:700}
+.sync{font-size:.8rem;color:var(--muted)}
+
+/* Summary: ribbon */
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:22px}
+.sum-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sum-spent{font-family:"Young Serif",Georgia,serif;font-size:1.7rem}
+.sum-of{color:var(--muted)}
+.ribbon{position:relative;height:12px;border-radius:6px;background:var(--frost);overflow:hidden;margin:12px 0 10px}
+.ribbon>span{position:absolute;inset:0 auto 0 0;background:var(--pine);border-radius:6px;transition:width .3s}
+.ribbon.over>span{background:var(--holly)}
+.tallies{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.tallies b{color:var(--ink);font-weight:600}
+
+/* Toolbar */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.88rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.spacer{flex:1}
+.btn{border:0;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;background:var(--holly);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:6px 10px;font-size:.88rem}
+.link{background:none;border:0;padding:4px 6px;color:var(--muted);cursor:pointer;font-size:.88rem;border-radius:6px}
+.link:hover{color:var(--ink)}
+.link.danger:hover{color:var(--holly)}
+
+/* Person — styled as a gift tag */
+.person{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.p-head{display:flex;align-items:center;gap:12px;padding:14px 16px 10px}
+.tag-hole{width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);flex:none}
+.p-name{font-family:"Young Serif",Georgia,serif;font-size:1.25rem;flex:1;min-width:0;overflow-wrap:anywhere}
+.p-money{font-size:.9rem;color:var(--muted);white-space:nowrap}
+.p-money b{color:var(--ink)}
+.p-money.over b{color:var(--holly)}
+.p-bar{height:4px;background:var(--frost);margin:0 16px}
+.p-bar>span{display:block;height:100%;background:var(--gold)}
+.p-bar.over>span{background:var(--holly)}
+.gifts{list-style:none;margin:0;padding:6px 0}
+.gift{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.gift:first-child{border-top:0}
+.g-title{font-weight:500;overflow-wrap:anywhere}
+.g-meta{grid-column:2/4;font-size:.85rem;color:var(--muted);overflow-wrap:anywhere}
+.g-price{font-variant-numeric:tabular-nums;font-weight:600}
+.status{border:0;border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.s-idea{background:var(--frost);color:var(--muted)}
+.s-bought{background:var(--gold-soft);color:var(--gold)}
+.s-wrapped{background:var(--holly-soft);color:var(--holly)}
+.s-given{background:var(--pine-soft);color:var(--pine)}
+.gift.given .g-title{text-decoration:line-through;text-decoration-color:var(--muted)}
+.g-actions{grid-column:2/4;display:flex;gap:2px;margin-left:-6px}
+.p-foot{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px 12px;border-top:1px dashed var(--line)}
+.none{padding:6px 16px 12px;color:var(--muted);font-size:.92rem}
+
+.empty{text-align:center;padding:48px 20px;border:1.5px dashed var(--line);border-radius:14px;color:var(--muted)}
+.empty h2{color:var(--ink);font-size:1.4rem;margin-bottom:6px}
+.empty .btn{margin-top:14px}
+
+/* Dialog */
+dialog{border:0;border-radius:16px;padding:0;background:var(--surface);color:var(--ink);width:min(440px,calc(100% - 32px));box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(10,25,20,.45)}
+.dlg{padding:20px}
+.dlg h2{font-size:1.3rem;margin-bottom:14px}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:.85rem;font-weight:600;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px 11px}
+.field textarea{resize:vertical;min-height:60px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.err{color:var(--holly);font-size:.85rem;min-height:1.2em;margin:0 0 6px}
+
+
+.account{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);flex-wrap:wrap;justify-content:flex-end}
+.gate{max-width:460px;margin:40px auto;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px 24px}
+.gate h2{font-size:1.5rem;margin-bottom:8px}
+.gate p{color:var(--muted);margin:0 0 16px}
+.gate code{background:var(--frost);padding:2px 6px;border-radius:5px;font-size:.9em}
+[hidden]{display:none!important}
+@media (max-width:520px){
+  .top h1{font-size:1.75rem}
+  .two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Christmas gift list</h1>
+      <div class="countdown" id="countdown"></div>
+    </div>
+    <div class="account"><span class="sync" id="sync" aria-live="polite">Loading…</span><span id="who"></span><button class="link" id="signOut" hidden>Sign out</button></div>
+  </header>
+
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden>
+  <section class="summary" id="summary" aria-label="Spending summary"></section>
+
+  <div class="toolbar">
+    <div class="filters" role="group" aria-label="Filter gifts by status" id="filters"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="addPerson">Add person</button>
+  </div>
+
+  <main id="list"></main>
+  </div>
+</div>
+
+<dialog id="personDlg">
+  <form class="dlg" method="dialog" id="personForm">
+    <h2 id="personDlgTitle">Add person</h2>
+    <label class="field"><span>Name</span><input id="pName" required maxlength="60" autocomplete="off"></label>
+    <label class="field"><span>Budget (optional)</span><input id="pBudget" type="number" min="0" step="0.01" inputmode="decimal"></label>
+    <p class="err" id="pErr"></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" data-close>Cancel</button>
+      <button type="submit" class="btn">Save person</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="giftDlg">
+  <form class="dlg" method="dialog" id="giftForm">
+    <h2 id="giftDlgTitle">Add gift</h2>
+    <label class="field"><span>Gift</span><input id="gTitle" required maxlength="100" autocomplete="off"></label>
+    <div class="two">
+      <label class="field"><span>Price</span><input id="gPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+      <label class="field"><span>Status</span>
+        <select id="gStatus">
+          <option value="idea">Idea</option>
+          <option value="bought">Bought</option>
+          <option value="wrapped">Wrapped</option>
+          <option value="given">Given</option>
+        </select>
+      </label>
+    </div>
+    <label class="field"><span>Store or link</span><input id="gStore" maxlength="200" autocomplete="off"></label>
+    <label class="field"><span>Notes</span><textarea id="gNotes" maxlength="500"></textarea></label>
+    <p class="err" id="gErr"></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" data-close>Cancel</button>
+      <button type="submit" class="btn">Save gift</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module">
+/* =====================================================================
+   PASTE YOUR FIREBASE CONFIG HERE
+   (Firebase console → Project settings → Your apps → Web app → Config)
+   These values are not secrets. The Firestore rules protect your data.
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCVthx7Y-YEl7TzfDrqmx5T7tt6wMjskR8",
+  authDomain: "gift-tracker-fee54.firebaseapp.com",
+  projectId: "gift-tracker-fee54",
+  storageBucket: "gift-tracker-fee54.firebasestorage.app",
+  messagingSenderId: "68446524477",
+  appId: "1:68446524477:web:204388234bf92200fe4654"
+};
+
+/* Everyone who can see and edit the list. Must match firestore.rules exactly.
+   Use the Google sign-in email, all lowercase. */
+const ALLOWED_EMAILS = [
+  "angarcia1001@gmail.com",
+  "shawneeparkinson@gmail.com"
+];
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const STATUSES = ["idea","bought","wrapped","given"];
+const LABEL = {idea:"Idea",bought:"Bought",wrapped:"Wrapped",given:"Given"};
+let people = [], gifts = [], filter = "all";
+let db = null, unsubs = [];
+
+const $ = id => document.getElementById(id);
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+const CUR = guessCurrency();
+const money = n => (Number(n)||0).toLocaleString(undefined,{style:"currency",currency:CUR,maximumFractionDigits:2});
+function guessCurrency(){
+  try{
+    const r = (new Intl.Locale(navigator.language||"en-US").maximize().region)||"US";
+    const map={US:"USD",CA:"CAD",GB:"GBP",AU:"AUD",NZ:"NZD",IE:"EUR",FR:"EUR",DE:"EUR",ES:"EUR",IT:"EUR",NL:"EUR",BE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",IN:"INR",JP:"JPY",MX:"MXN",BR:"BRL",ZA:"ZAR",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN"};
+    return map[r]||"USD";
+  }catch(e){return "USD"}
+}
+const counted = g => g.status !== "idea";
+const giftsOf = pid => gifts.filter(g=>g.personId===pid).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+const strip = o => { const {id, ...rest} = o; return rest; };
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function setSync(t){ $("sync").textContent = t; }
+
+/* ---------- Screens ---------- */
+function showGate(html){ $("gate").innerHTML = html; $("gate").hidden = false; $("app").hidden = true; }
+function showApp(){ $("gate").hidden = true; $("app").hidden = false; }
+
+/* ---------- Countdown ---------- */
+(function countdown(){
+  const now = new Date();
+  const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let xmas = new Date(now.getFullYear(),11,25);
+  if (today > xmas) xmas = new Date(now.getFullYear()+1,11,25);
+  const days = Math.round((xmas - today)/86400000);
+  $("countdown").innerHTML = days === 0 ? "<strong>It’s Christmas!</strong>" :
+    `<strong>${days}</strong> ${days===1?"day":"days"} until Christmas`;
+})();
+
+/* ---------- Render ---------- */
+function render(){
+  let spent=0, budget=0, planned=0; const counts={idea:0,bought:0,wrapped:0,given:0};
+  people.forEach(p=>{ budget += Number(p.budget)||0; });
+  gifts.forEach(g=>{ if(!people.some(p=>p.id===g.personId)) return; counts[g.status]=(counts[g.status]||0)+1; if(counted(g)) spent+=Number(g.price)||0; else planned+=Number(g.price)||0; });
+  const over = budget>0 && spent>budget;
+  const pct = budget>0 ? Math.min(100, spent/budget*100) : 0;
+  const total = counts.idea+counts.bought+counts.wrapped+counts.given;
+  $("summary").innerHTML = `
+    <div class="sum-row">
+      <div><span class="sum-spent">${money(spent)}</span> <span class="sum-of">spent${budget>0?` of ${money(budget)}`:""}</span></div>
+      <div class="sum-of">${budget>0 ? (over ? `${money(spent-budget)} over budget` : `${money(budget-spent)} left`) : "Set budgets per person to track what’s left"}</div>
+    </div>
+    ${budget>0?`<div class="ribbon ${over?"over":""}" role="img" aria-label="${Math.round(spent/budget*100)}% of budget spent"><span style="width:${pct}%"></span></div>`:`<div style="height:10px"></div>`}
+    <div class="tallies">
+      <span><b>${people.length}</b> ${people.length===1?"person":"people"}</span>
+      <span><b>${total}</b> ${total===1?"gift":"gifts"}</span>
+      <span><b>${counts.idea}</b> still ideas${planned>0?` (${money(planned)})`:""}</span>
+      <span><b>${counts.bought+counts.wrapped+counts.given}</b> bought</span>
+      <span><b>${counts.wrapped+counts.given}</b> wrapped</span>
+    </div>`;
+
+  $("filters").innerHTML = ["all",...STATUSES].map(s=>`<button class="chip" data-filter="${s}" aria-pressed="${filter===s}">${s==="all"?"All":LABEL[s]}</button>`).join("");
+
+  const list = $("list");
+  if (!people.length){
+    list.innerHTML = `<div class="empty"><h2>Who are you shopping for?</h2>
+      <div>Add each person, give them a budget if you like, then list gift ideas and mark them off as you buy and wrap.</div>
+      <button class="btn" data-act="add-person">Add your first person</button></div>`;
+    return;
+  }
+  list.innerHTML = "";
+  [...people].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).forEach(p=>{
+    const all = giftsOf(p.id);
+    const pSpent = all.filter(counted).reduce((a,g)=>a+(Number(g.price)||0),0);
+    const pBudget = Number(p.budget)||0;
+    const pOver = pBudget>0 && pSpent>pBudget;
+    const shown = all.filter(g=>filter==="all"||g.status===filter);
+    const el = document.createElement("section");
+    el.className="person"; el.dataset.pid=p.id;
+    el.innerHTML = `
+      <div class="p-head">
+        <span class="tag-hole" aria-hidden="true"></span>
+        <h2 class="p-name"></h2>
+        <span class="p-money ${pOver?"over":""}"><b>${money(pSpent)}</b>${pBudget>0?` / ${money(pBudget)}`:""}</span>
+      </div>
+      ${pBudget>0?`<div class="p-bar ${pOver?"over":""}"><span style="width:${Math.min(100,pSpent/pBudget*100)}%"></span></div>`:""}
+      ${shown.length ? `<ul class="gifts"></ul>` :
+        `<div class="none">${all.length ? `No ${LABEL[filter].toLowerCase()} gifts for ${esc(p.name)}.` : "No gifts yet."}</div>`}
+      <div class="p-foot">
+        <button class="btn small" data-act="add-gift">Add gift</button>
+        <span class="spacer"></span>
+        <button class="link" data-act="edit-person">Edit</button>
+        <button class="link danger" data-act="del-person">Remove</button>
+      </div>`;
+    el.querySelector(".p-name").textContent = p.name;
+    const ul = el.querySelector(".gifts");
+    shown.forEach(g=>{
+      const li = document.createElement("li");
+      li.className = "gift" + (g.status==="given"?" given":""); li.dataset.gid=g.id;
+      const meta = [g.store, g.notes].filter(Boolean);
+      li.innerHTML = `
+        <button class="status s-${g.status}" data-act="cycle" title="Change status">${LABEL[g.status]||"Idea"}</button>
+        <span class="g-title"></span>
+        <span class="g-price">${g.price!==""&&g.price!=null?money(g.price):""}</span>
+        ${meta.length?`<span class="g-meta"></span>`:""}
+        <span class="g-actions"><button class="link" data-act="edit-gift">Edit</button><button class="link danger" data-act="del-gift">Delete</button></span>`;
+      li.querySelector(".g-title").textContent = g.title;
+      if (meta.length) li.querySelector(".g-meta").textContent = meta.join(" — ");
+      ul.appendChild(li);
+    });
+    list.appendChild(el);
+  });
+}
+
+/* ---------- Writes ---------- */
+function handleErr(e){
+  console.error(e);
+  if (e && e.code === "permission-denied") setSync("Not saved — this account isn’t on the list in firestore.rules");
+  else setSync("Couldn’t save that change — check your connection");
+}
+async function write(coll, id, data){
+  setSync("Saving…");
+  try{ await setDoc(doc(db, coll, id), data); setSync("All changes saved"); }
+  catch(e){ handleErr(e); }
+}
+async function removeGiftsAndPerson(p, theirs){
+  setSync("Saving…");
+  try{
+    const b = writeBatch(db);
+    theirs.forEach(g=>b.delete(doc(db,"gifts",g.id)));
+    b.delete(doc(db,"people",p.id));
+    await b.commit(); setSync("All changes saved");
+  }catch(e){ handleErr(e); }
+}
+
+/* ---------- Dialogs ---------- */
+let editPerson=null, editGift=null, giftOwner=null;
+function openPerson(p){
+  editPerson = p||null;
+  $("personDlgTitle").textContent = p ? "Edit person" : "Add person";
+  $("pName").value = p?p.name:""; $("pBudget").value = p&&p.budget!==""&&p.budget!=null?p.budget:"";
+  $("pErr").textContent="";
+  $("personDlg").showModal(); $("pName").focus();
+}
+function openGift(person, g){
+  giftOwner = person; editGift = g||null;
+  $("giftDlgTitle").textContent = g ? "Edit gift" : `Add gift for ${person.name}`;
+  $("gTitle").value=g?g.title:""; $("gPrice").value=g&&g.price!==""&&g.price!=null?g.price:"";
+  $("gStatus").value=g?g.status:"idea"; $("gStore").value=g?g.store||"":""; $("gNotes").value=g?g.notes||"":"";
+  $("gErr").textContent="";
+  $("giftDlg").showModal(); $("gTitle").focus();
+}
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest("dialog").close()));
+
+$("personForm").addEventListener("submit",e=>{
+  const name=$("pName").value.trim();
+  if(!name){ e.preventDefault(); $("pErr").textContent="Enter a name."; return; }
+  const b=$("pBudget").value; const budget = b===""?"":Math.max(0,Number(b));
+  const p = editPerson ? {...editPerson, name, budget} : {id:uid(), name, budget, createdAt:Date.now()};
+  write("people", p.id, strip(p));
+});
+$("giftForm").addEventListener("submit",e=>{
+  const title=$("gTitle").value.trim();
+  if(!title){ e.preventDefault(); $("gErr").textContent="Enter a gift name."; return; }
+  const pr=$("gPrice").value;
+  const data={title,price:pr===""?"":Math.max(0,Number(pr)),status:$("gStatus").value,store:$("gStore").value.trim(),notes:$("gNotes").value.trim()};
+  const g = editGift ? {...editGift, ...data} : {id:uid(), personId:giftOwner.id, createdAt:Date.now(), ...data};
+  write("gifts", g.id, strip(g));
+});
+
+$("addPerson").addEventListener("click",()=>openPerson());
+$("filters").addEventListener("click",e=>{
+  const b=e.target.closest("[data-filter]"); if(!b) return;
+  filter=b.dataset.filter; render();
+});
+$("list").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const act=b.dataset.act;
+  if (act==="add-person") return openPerson();
+  const pEl=b.closest(".person"); const p=pEl&&people.find(x=>x.id===pEl.dataset.pid); if(!p) return;
+  const gEl=b.closest(".gift"); const g=gEl&&gifts.find(x=>x.id===gEl.dataset.gid);
+  if (act==="add-gift") openGift(p);
+  else if (act==="edit-person") openPerson(p);
+  else if (act==="del-person"){
+    const theirs = giftsOf(p.id);
+    if(confirm(`Remove ${p.name} and their ${theirs.length} gift${theirs.length===1?"":"s"}? This removes them for everyone.`)) removeGiftsAndPerson(p, theirs);
+  }
+  else if (act==="edit-gift" && g) openGift(p,g);
+  else if (act==="del-gift" && g){
+    if(confirm(`Delete “${g.title}”?`)){ setSync("Saving…"); deleteDoc(doc(db,"gifts",g.id)).then(()=>setSync("All changes saved")).catch(handleErr); }
+  }
+  else if (act==="cycle" && g){
+    const ng = {...g, status: STATUSES[(STATUSES.indexOf(g.status)+1)%STATUSES.length]};
+    write("gifts", g.id, strip(ng));
+  }
+});
+
+/* ---------- Start ---------- */
+if (firebaseConfig.apiKey === "PASTE_API_KEY"){
+  setSync("");
+  showGate(`<h2>Add your Firebase keys</h2>
+    <p>Open <code>index.html</code>, find <code>PASTE YOUR FIREBASE CONFIG HERE</code>, and paste your project’s config. The README walks through it.</p>`);
+} else {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+
+  $("signOut").addEventListener("click",()=>signOut(auth));
+  document.addEventListener("click",e=>{
+    if (e.target.closest("#signInBtn")) signInWithPopup(auth, provider).catch(err=>{
+      console.error(err);
+      const msg = err.code==="auth/unauthorized-domain"
+        ? "This web address isn’t authorized yet. In Firebase, add it under Authentication → Settings → Authorized domains."
+        : err.code==="auth/popup-closed-by-user" ? "" : "Sign-in didn’t finish. Try again.";
+      if (msg) $("gateMsg").textContent = msg;
+    });
+  });
+
+  onAuthStateChanged(auth, u=>{
+    unsubs.forEach(f=>f()); unsubs=[]; people=[]; gifts=[];
+    if (!u){
+      $("who").textContent=""; $("signOut").hidden=true; setSync("");
+      showGate(`<h2>Sign in to see the list</h2>
+        <p>This list is private to the people it’s shared with.</p>
+        <button class="btn" id="signInBtn">Sign in with Google</button>
+        <p class="err" id="gateMsg" style="margin-top:12px"></p>`);
+      return;
+    }
+    $("who").textContent = u.email; $("signOut").hidden = false;
+    const email = (u.email||"").toLowerCase();
+    if (!ALLOWED_EMAILS.map(x=>x.toLowerCase()).includes(email)){
+      setSync("");
+      showGate(`<h2>This account doesn’t have access</h2>
+        <p>You’re signed in as <code>${esc(u.email||"")}</code>. Ask the list’s owner to add this email, or sign out and use a different Google account.</p>`);
+      return;
+    }
+    showApp(); render(); setSync("Loading…");
+    const toArr = snap => snap.docs.map(d=>({id:d.id, ...d.data()}));
+    const onErr = e => { console.error(e); setSync(e.code==="permission-denied" ? "Access denied — check the emails in firestore.rules" : "Lost connection — reload to retry"); };
+    unsubs.push(onSnapshot(collection(db,"people"), s=>{ people=toArr(s); render(); setSync("Live · all changes saved"); }, onErr));
+    unsubs.push(onSnapshot(collection(db,"gifts"), s=>{ gifts=toArr(s); render(); }, onErr));
+  });
+}
+</script>
+</body>
+</html>
